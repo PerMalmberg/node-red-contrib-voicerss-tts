@@ -1,2 +1,2 @@
 # node-red-contrib-voicerss-tts
-Text-to-speach for Node-Red via Voice RSS
+Text-to-speech for Node-Red via Voice RSS

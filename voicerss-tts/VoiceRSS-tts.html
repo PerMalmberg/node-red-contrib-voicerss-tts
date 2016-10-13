@@ -1,0 +1,201 @@
+<!-- 
+Licensed under the MIT license, see LICENSE file.
+Author: Per Malmberg (https://github.com/PerMalmberg)
+-->
+
+<script type="text/javascript">
+    RED.nodes.registerType('VoiceRSStts',{
+        category: 'Sound',
+        color: '#C0DEED',
+        defaults: {
+			name: { 
+				value: ""
+			},
+            apiKey: {
+				value: "",
+				required: true,
+				validate:
+					function(v) { 
+						return v !== undefined && v.length > 0;
+					}
+			},
+			language: {
+				value: "en-gb",
+				required: true,
+				validate: 
+					function(v) { 
+						return v !== undefined && v.length === 5;
+					}
+			},
+			rate: {
+				value: "0",
+				required: true,
+				validate:
+					function(v) { 
+						return v >= -10 && v <= 10;
+					}
+			},
+			codec: {
+				value: "MP3",
+				required: true,
+				validate:
+					function(v) {
+						return v !== undefined && v.length === 3 ;
+					}
+			},
+			format: {
+				value: "8khz_8bit_mono",
+				required: true,
+				validate:
+					function(v) {
+						return v !== undefined && v.length > 0;
+					}
+			},
+			cacheLocation: {
+				value: "",
+				required: true,
+				validate:
+					function(v) {
+						return v !== undefined && v.length > 0;
+					}
+			}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "bridge.png",
+        label: 
+			function() {
+				return this.name || "TTS";
+			},
+		paletteLabel: function() {
+			return "Text-to-speech";
+		}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="VoiceRSStts">
+	<div class="form-row">
+        <label for="node-input-apiKey"><i class="icon-tag"></i> Voice RSS API Key</label>
+		<input type="text" id="node-input-apiKey" placeholder="Your Voice RSS API Key">
+    </div>
+	<div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-language"><i class="icon-tag"></i> Language</label>
+        <select type="text" id="node-input-language" placeholder="Language">
+            <option value="ca-es">Catalan</option>
+            <option value="zh-cn">Chinese (China)</option>
+            <option value="zh-hk">Chinese (Hong Kong)</option>
+            <option value="zh-tw">Chinese (Taiwan)</option>
+            <option value="da-dk">Danish</option>
+            <option value="nl-nl">Dutch</option>
+            <option value="en-au">English (Australia)</option>
+            <option value="en-ca">English (Canada)</option>
+            <option value="en-gb">English (Great Britain)</option>
+            <option value="en-in">English (India)</option>
+            <option value="en-us">English (United States)</option>
+            <option value="fi-fi">Finnish</option>
+            <option value="fr-ca">French (Canada)</option>
+            <option value="fr-fr">French (France)</option>
+            <option value="de-de">German</option>
+            <option value="it-it">Italian</option>
+            <option value="ja-jp">Japanese</option>
+            <option value="ko-kr">Korean</option>
+            <option value="nb-no">Norwegian</option>
+            <option value="pl-pl">Polish</option>
+            <option value="pt-br">Portuguese (Brazil)</option>
+            <option value="pt-pt">Portuguese (Portugal)</option>
+            <option value="ru-ru">Russian</option>
+            <option value="es-mx">Spanish (Mexico)</option>
+            <option value="es-es">Spanish (Spain)</option>
+            <option value="sv-se">Swedish (Sweden)</option>
+		</select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-rate"><i class="icon-tag"></i> The speech rate, -10 ... 10</label>
+        <input type="text" id="node-input-rate" placeholder="Speech rate">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-format"><i class="icon-tag"></i> Audio Format</label>
+        <select type="text" id="node-input-format" placeholder="Audio Format">
+            <option value="8khz_8bit_mono">8 kHz, 8 Bit, Mono</option>
+            <option value="8khz_8bit_stereo">8 kHz, 8 Bit, Stereo</option>
+            <option value="8khz_16bit_mono">8 kHz, 16 Bit, Mono</option>
+            <option value="8khz_16bit_stereo">8 kHz, 16 Bit, Stereo</option>
+            <option value="11khz_8bit_mono">11 kHz, 8 Bit, Mono</option>
+            <option value="11khz_8bit_stereo">11 kHz, 8 Bit, Stereo</option>
+            <option value="11khz_16bit_mono">11 kHz, 16 Bit, Mono</option>
+            <option value="11khz_16bit_stereo">11 kHz, 16 Bit, Stereo</option>
+            <option value="12khz_8bit_mono">12 kHz, 8 Bit, Mono</option>
+            <option value="12khz_8bit_stereo">12 kHz, 8 Bit, Stereo</option>
+            <option value="12khz_16bit_mono">12 kHz, 16 Bit, Mono</option>
+            <option value="12khz_16bit_stereo">12 kHz, 16 Bit, Stereo</option>
+            <option value="16khz_8bit_mono">16 kHz, 8 Bit, Mono</option>
+            <option value="16khz_8bit_stereo">16 kHz, 8 Bit, Stereo</option>
+            <option value="16khz_16bit_mono">16 kHz, 16 Bit, Mono</option>
+            <option value="16khz_16bit_stereo">16 kHz, 16 Bit, Stereo</option>
+            <option value="22khz_8bit_mono">22 kHz, 8 Bit, Mono</option>
+            <option value="22khz_8bit_stereo">22 kHz, 8 Bit, Stereo</option>
+            <option value="22khz_16bit_mono">22 kHz, 16 Bit, Mono</option>
+            <option value="22khz_16bit_stereo">22 kHz, 16 Bit, Stereo</option>
+            <option value="24khz_8bit_mono">24 kHz, 8 Bit, Mono</option>
+            <option value="24khz_8bit_stereo">24 kHz, 8 Bit, Stereo</option>
+            <option value="24khz_16bit_mono">24 kHz, 16 Bit, Mono</option>
+            <option value="24khz_16bit_stereo">24 kHz, 16 Bit, Stereo</option>
+            <option value="32khz_8bit_mono">32 kHz, 8 Bit, Mono</option>
+            <option value="32khz_8bit_stereo">32 kHz, 8 Bit, Stereo</option>
+            <option value="32khz_16bit_mono">32 kHz, 16 Bit, Mono</option>
+            <option value="32khz_16bit_stereo">32 kHz, 16 Bit, Stereo</option>
+            <option value="44khz_8bit_mono">44 kHz, 8 Bit, Mono</option>
+            <option value="44khz_8bit_stereo">44 kHz, 8 Bit, Stereo</option>
+            <option value="44khz_16bit_mono">44 kHz, 16 Bit, Mono</option>
+            <option value="44khz_16bit_stereo">44 kHz, 16 Bit, Stereo</option>
+            <option value="48khz_8bit_mono">48 kHz, 8 Bit, Mono</option>
+            <option value="48khz_8bit_stereo">48 kHz, 8 Bit, Stereo</option>
+            <option value="48khz_16bit_mono">48 kHz, 16 Bit, Mono</option>
+            <option value="48khz_16bit_stereo">48 kHz, 16 Bit, Stereo</option>
+            <option value="alaw_8khz_mono">ALaw, 8 kHz, Mono</option>
+            <option value="alaw_8khz_stereo">ALaw, 8 kHz, Stereo</option>
+            <option value="alaw_11khz_mono">ALaw, 11 kHz, Mono</option>
+            <option value="alaw_11khz_stereo">ALaw, 11 kHz, Stereo</option>
+            <option value="alaw_22khz_mono">ALaw, 22 kHz, Mono</option>
+            <option value="alaw_22khz_stereo">ALaw, 22 kHz, Stereo</option>
+            <option value="alaw_44khz_mono">ALaw, 44 kHz, Mono</option>
+            <option value="alaw_44khz_stereo">ALaw, 44 kHz, Stereo</option>
+            <option value="ulaw_8khz_mono">uLaw, 8 kHz, Mono</option>
+            <option value="ulaw_8khz_stereo">uLaw, 8 kHz, Stereo</option>
+            <option value="ulaw_11khz_mono">uLaw, 11 kHz, Mono</option>
+            <option value="ulaw_11khz_stereo">uLaw, 11 kHz, Stereo</option>
+            <option value="ulaw_22khz_mono">uLaw, 22 kHz, Mono</option>
+            <option value="ulaw_22khz_stereo">uLaw, 22 kHz, Stereo</option>
+            <option value="ulaw_44khz_mono">uLaw, 44 kHz, Mono</option>
+            <option value="ulaw_44khz_stereo">uLaw, 44 kHz, Stereo</option>
+		</select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-codec"><i class="icon-tag"></i> Audio Codec</label>
+        <select type="text" id="node-input-codec" placeholder="Audio Codec">
+            <option value="MP3">Mp3</option>
+            <option value="WAV">Wav</option>
+            <option value="AAC">Aac</option>
+            <option value="OGG">Ogg</option>
+            <option value="CAF">Caf</option>
+		</select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-cacheLocation"><i class="icon-tag"></i> Cache location</label>
+        <input type="text" id="node-input-cacheLocation" placeholder="Path to cache Location">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="VoiceRSStts">
+    <p>A for retrieving audio files from Voice RSS to later be played by for example mpg321.<br/>
+	</p>
+</script>
